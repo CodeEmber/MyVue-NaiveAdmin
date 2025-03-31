@@ -13,7 +13,7 @@
       </n-card>
 
       <div class="error-footer">
-        <p>© {{ currentYear }} 健身管理系统</p>
+        <p>© {{ currentYear }} 后台管理系统</p>
       </div>
     </div>
   </div>

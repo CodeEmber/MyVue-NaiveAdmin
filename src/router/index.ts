@@ -132,7 +132,7 @@ const router = createRouter({
 // 全局前置守卫
 router.beforeEach(async (to, from, next) => {
   // 更新页面标题
-  document.title = to.meta.title ? `${to.meta.title} - 健身管理系统` : '健身管理系统'
+  document.title = to.meta.title ? `${to.meta.title} - 后台管理系统` : '后台管理系统'
 
   // 检查路由是否需要认证
   if (to.meta.requiresAuth) {
