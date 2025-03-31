@@ -2,11 +2,11 @@
   <div class="footer" :class="{ 'dark-mode': isDarkMode }">
     🌟
     <a href="https://beian.miit.gov.cn/#/Integrated/index" target="_blank" rel="noopener noreferrer"
-      >浙ICP备2024096822号</a
+      >浙ICP备</a
     >
     ｜ 🎉 Design by
     <a href="#" class="transition line" onclick="window.location.href = window.location.href"
-      >wyx-hhhh</a
+      >wyx</a
     >
   </div>
 </template>

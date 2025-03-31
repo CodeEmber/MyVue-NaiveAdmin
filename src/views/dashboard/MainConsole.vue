@@ -39,6 +39,7 @@
     </n-grid>
 
     <!-- 中部内容展示区域 -->
+    <div class="mt-16"></div>
     <n-grid cols="1 m:2" :x-gap="16" :y-gap="16" class="mt-16">
       <n-grid-item>
         <n-card title="最近文章" class="content-card">

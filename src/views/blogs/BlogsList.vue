@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="blogs-list">
     <!-- 搜索区域卡片 -->
     <n-card style="margin-bottom: 16px">
       <template #header>
@@ -55,11 +55,7 @@
 
     <!-- 博客列表卡片 -->
     <n-card>
-      <template #header
-        ><n-space align="stretch"
-          ><n-icon size="22" style="margin-top: 2px"><BookOutline /></n-icon>博客列表</n-space
-        ></template
-      >
+      <template #header><n-space align="stretch">博客列表</n-space></template>
       <template #header-extra
         ><n-button type="primary" size="small" @click="addBlog"
           ><template #icon>
@@ -610,4 +606,8 @@ onMounted(() => {
 })
 </script>
 
-<style></style>
+<style scoped>
+.blogs-list {
+  padding: 16px;
+}
+</style>

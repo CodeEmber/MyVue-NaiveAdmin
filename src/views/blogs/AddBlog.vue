@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="add-blog">
     <n-card>
       <template #header>
         <n-space align="stretch">
@@ -227,4 +227,8 @@ onMounted(() => {
 })
 </script>
 
-<style></style>
+<style scoped>
+.add-blog {
+  padding: 16px;
+}
+</style>
