@@ -14,7 +14,7 @@
       <!-- 添加 Logo 和系统名称 -->
       <div class="logo-container" :class="{ collapsed: collapsed }">
         <img src="@/assets/logo.svg" alt="Logo" class="app-logo" />
-        <span class="app-name" v-if="!collapsed">后台管理系统</span>
+        <span class="app-name" v-if="!collapsed">{{ t('app.title') }}</span>
       </div>
 
       <n-menu
@@ -55,6 +55,10 @@ import FooterArea from './components/FooterArea.vue'
 import { asyncRoutes } from '../router'
 import type { AppRouteRecordRaw } from '../router/types'
 import type { Component } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+// 初始化i18n
+const { t } = useI18n()
 
 // 添加图标组件的类型定义
 function renderIcon(icon: Component | undefined) {
@@ -71,9 +75,12 @@ const generateMenuOptions = (routes: AppRouteRecordRaw[]): MenuOption[] => {
       return !route.meta?.hidden && route.name
     })
     .map((route) => {
+      // 获取菜单标题，如果是翻译键则进行翻译，否则直接使用原值
+      const title = route.meta?.title ? t(route.meta.title as string) : route.name
+
       // 基础的菜单项配置
       const menuOption: MenuOption = {
-        label: route.meta?.title || route.name,
+        label: title,
         key: route.name,
         icon: route.meta?.icon ? renderIcon(route.meta.icon as unknown as Component) : undefined,
       }

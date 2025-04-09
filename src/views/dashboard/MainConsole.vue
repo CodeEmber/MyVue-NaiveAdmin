@@ -5,8 +5,8 @@
         <n-space align="center">
           <n-avatar round size="large" src="https://placeholder.pics/svg/100/4080FF-FFFFFF/首页" />
           <div>
-            <h2 class="welcome-title">欢迎回来，管理员</h2>
-            <p class="welcome-subtitle">今天是 {{ currentDate }}，祝您工作愉快！</p>
+            <h2 class="welcome-title">{{ t('dashboard.welcome') }}管理员</h2>
+            <p class="welcome-subtitle">{{ t('dashboard.today', { date: currentDate }) }}</p>
           </div>
         </n-space>
       </n-card>
@@ -42,7 +42,7 @@
     <div class="mt-16"></div>
     <n-grid cols="1 m:2" :x-gap="16" :y-gap="16" class="mt-16">
       <n-grid-item>
-        <n-card title="最近文章" class="content-card">
+        <n-card :title="t('dashboard.recentArticles')" class="content-card">
           <n-list hoverable clickable>
             <n-list-item v-for="(item, index) in recentArticles" :key="index">
               <n-thing :title="item.title">
@@ -68,12 +68,12 @@
             </n-list-item>
           </n-list>
           <div class="text-center mt-16">
-            <n-button text>查看更多文章</n-button>
+            <n-button text>{{ t('dashboard.viewMore') }}</n-button>
           </div>
         </n-card>
       </n-grid-item>
       <n-grid-item>
-        <n-card title="新增用户" class="content-card">
+        <n-card :title="t('dashboard.newUsers')" class="content-card">
           <n-list>
             <n-list-item v-for="(user, index) in newUsers" :key="index">
               <n-thing :title="user.name">
@@ -82,7 +82,7 @@
                 </template>
                 <template #header-extra>
                   <n-tag :type="user.vip ? 'success' : 'default'">{{
-                    user.vip ? 'VIP会员' : '普通会员'
+                    user.vip ? t('dashboard.vipMember') : t('dashboard.regularMember')
                   }}</n-tag>
                 </template>
                 <template #description>
@@ -95,38 +95,38 @@
             </n-list-item>
           </n-list>
           <div class="text-center mt-16">
-            <n-button text>查看更多用户</n-button>
+            <n-button text>{{ t('dashboard.viewMore') }}</n-button>
           </div>
         </n-card>
       </n-grid-item>
     </n-grid>
 
     <!-- 快速链接区域 -->
-    <n-card title="快速操作" class="mt-16">
+    <n-card :title="t('dashboard.quickActions')" class="mt-16">
       <n-space>
         <n-button type="primary" @click="goToCreateArticle">
           <template #icon>
             <n-icon :component="createOutlineIcon" />
           </template>
-          发布文章
+          {{ t('dashboard.actions.createArticle') }}
         </n-button>
         <n-button type="info" @click="goToUserManage">
           <template #icon>
             <n-icon :component="personAddOutlineIcon" />
           </template>
-          添加用户
+          {{ t('dashboard.actions.addUser') }}
         </n-button>
         <n-button type="success" @click="goToCommentManage">
           <template #icon>
             <n-icon :component="chatbubblesOutlineIcon" />
           </template>
-          审核评论
+          {{ t('dashboard.actions.reviewComments') }}
         </n-button>
         <n-button type="warning" @click="goToSystemSetting">
           <template #icon>
             <n-icon :component="settingsOutlineIcon" />
           </template>
-          系统设置
+          {{ t('dashboard.actions.systemSettings') }}
         </n-button>
       </n-space>
     </n-card>
@@ -136,6 +136,7 @@
 <script setup lang="ts">
 import { ref, computed, markRaw } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import {
   PeopleOutline,
   PersonOutline,
@@ -161,34 +162,35 @@ const createOutlineIcon = markRaw(CreateOutline)
 const statsChartOutlineIcon = markRaw(StatsChartOutline)
 
 const router = useRouter()
+const { t } = useI18n() // 初始化i18n的使用
 
 // 当前日期
 const currentDate = computed(() => formatDate(new Date(), 'YYYY年MM月DD日'))
 
 // 顶部统计卡片数据
-const topStats = ref([
+const topStats = computed(() => [
   {
-    title: '用户总数',
+    title: t('dashboard.stats.userTotal'),
     value: '5,842',
     icon: peopleOutlineIcon,
     progress: { percentage: 70, color: '#18a058' },
     trend: { type: 'success', text: '月增长 12%' },
   },
   {
-    title: '文章总数',
+    title: t('dashboard.stats.articleTotal'),
     value: '756',
     icon: documentTextOutlineIcon,
     progress: { percentage: 45, color: '#2080f0' },
     trend: { type: 'success', text: '月增长 8%' },
   },
   {
-    title: '评论总数',
+    title: t('dashboard.stats.commentTotal'),
     value: '2,483',
     icon: chatbubblesOutlineIcon,
     progress: { percentage: 60, color: '#f0a020' },
   },
   {
-    title: '系统健康度',
+    title: t('dashboard.stats.systemHealth'),
     value: '98%',
     icon: statsChartOutlineIcon,
     progress: { percentage: 98, color: '#18a058' },

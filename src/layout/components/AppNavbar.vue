@@ -47,6 +47,22 @@
         </div>
       </n-button>
 
+      <!-- 语言切换按钮 -->
+      <n-dropdown
+        trigger="click"
+        :options="languageOptions"
+        @select="handleLanguageSelect"
+        :value="languageStore.currentLanguage"
+      >
+        <n-button text class="language-btn">
+          <div class="icon-wrapper">
+            <n-icon size="18">
+              <LanguageOutline />
+            </n-icon>
+          </div>
+        </n-button>
+      </n-dropdown>
+
       <!-- 页面配置按钮 -->
       <n-button text @click="openSettingsDrawer" class="settings-btn">
         <div class="icon-wrapper">
@@ -69,16 +85,16 @@
 
     <!-- 页面配置抽屉 -->
     <n-drawer v-model:show="showSettingsDrawer" :width="300" placement="right">
-      <n-drawer-content title="页面配置">
-        <n-divider>主题设置</n-divider>
+      <n-drawer-content :title="t('navbar.settings')">
+        <n-divider>{{ t('navbar.theme.title') }}</n-divider>
         <n-space vertical>
           <n-space align="center" justify="space-between">
-            <span>暗色模式</span>
+            <span>{{ t('navbar.theme.darkMode') }}</span>
             <n-switch v-model:value="isDarkMode" @update:value="toggleTheme" />
           </n-space>
 
           <n-space vertical size="small">
-            <span>主题颜色</span>
+            <span>{{ t('navbar.theme.themeColor') }}</span>
             <n-color-picker
               v-model:value="primaryColor"
               :swatches="colorSwatches"
@@ -128,7 +144,9 @@
 <script setup lang="ts">
 import { h, computed, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { NIcon, useMessage, type FormInst, type FormRules, type DropdownOption } from 'naive-ui'
+import { NIcon, useMessage, type FormInst, type FormRules } from 'naive-ui'
+import { useI18n } from 'vue-i18n'
+import i18n from '../../i18n'
 import type { Component } from 'vue'
 import {
   PersonCircleOutline as UserIcon,
@@ -140,9 +158,11 @@ import {
   ReloadOutline,
   ExpandOutline,
   ContractOutline,
+  LanguageOutline,
 } from '@vicons/ionicons5'
 import { useAppStore } from '../../stores/app'
 import { useUserStore } from '../../stores/user'
+import { useLanguageStore } from '../../stores/language'
 import type { RouteRecordNormalized } from 'vue-router'
 
 // 设置组件名称
@@ -163,6 +183,8 @@ const route = useRoute()
 const message = useMessage()
 const appStore = useAppStore()
 const userStore = useUserStore() // 使用用户状态
+const languageStore = useLanguageStore() // 使用语言状态
+const { t } = useI18n() // 使用翻译函数
 const profile = ref(false)
 const editProfile = ref(false)
 const formRef = ref<FormInst | null>(null)
@@ -192,12 +214,12 @@ const colorSwatches = [
 
 const toggleTheme = () => {
   appStore.toggleThemeMode()
-  message.success(isDarkMode.value ? '已切换到暗色模式' : '已切换到亮色模式')
+  message.success(isDarkMode.value ? t('navbar.theme.toggleDark') : t('navbar.theme.toggleLight'))
 }
 
 const updatePrimaryColor = (color: string) => {
   appStore.setPrimaryColor(color)
-  message.success('主题颜色已更新')
+  message.success(t('navbar.theme.themeSuccess'))
 }
 
 const openSettingsDrawer = () => {
@@ -218,10 +240,12 @@ const generator = (routerMap: RouteRecordNormalized[]): BreadcrumbItem[] => {
     // 确保 key 是字符串类型
     const nameAsString = typeof item.name === 'symbol' ? item.name.toString() : String(item.name)
 
-    // 确保 label 是字符串类型
+    // 确保 label 是字符串类型，并进行翻译处理
     let labelText: string = nameAsString
     if (item.meta && typeof item.meta === 'object' && 'title' in item.meta) {
-      labelText = String(item.meta.title)
+      // 如果 meta.title 是一个翻译键，使用 t 函数进行翻译
+      const title = String(item.meta.title)
+      labelText = t(title)
     }
 
     // 创建一个符合自定义 BreadcrumbItem 类型的对象
@@ -272,23 +296,23 @@ function handleSelect(key: string) {
   } else if (key === 'logout') {
     // 使用用户状态中的退出登录方法
     userStore.logout().then(() => {
-      message.success('已退出登录')
+      message.success(t('navbar.logoutSuccess'))
       router.push('/login')
     })
   }
 }
 
 function cancelCallback() {
-  message.success('取消')
+  message.success(t('common.cancel.success'))
 }
 
 function submitCallback() {
   formRef.value?.validate((errors) => {
     if (!errors) {
-      message.success('验证成功')
+      message.success(t('common.validate.success'))
       editProfile.value = false
     } else {
-      message.error('验证失败')
+      message.error(t('common.validate.failed'))
     }
   })
   return false
@@ -298,41 +322,70 @@ const rules: FormRules = {
   account: [
     {
       required: true,
-      message: '请输入账号',
+      message: t('form.account.required'),
     },
   ],
   password: [
     {
       required: true,
-      message: '请输入密码',
+      message: t('form.password.required'),
     },
   ],
 }
 
 // 用户选项
-const options: DropdownOption[] = [
+const options = computed(() => [
   {
-    label: '个人资料',
+    label: t('navbar.profile'),
     key: 'profile',
     icon: renderIcon(UserIcon),
   },
   {
-    label: '编辑资料',
+    label: t('navbar.editProfile'),
     key: 'editProfile',
     icon: renderIcon(EditIcon),
   },
   {
-    label: '退出登录',
+    label: t('navbar.logout'),
     key: 'logout',
     icon: renderIcon(LogoutIcon),
   },
-]
+])
 
 // 编程式导出 model，供模板使用
 const model = modelRef
 
 // 添加全屏相关状态
 const isFullscreen = ref(false)
+
+// 添加语言选项
+const languageOptions = computed(() =>
+  languageStore.availableLanguages.map((lang) => ({
+    label: lang.label,
+    key: lang.value,
+  })),
+)
+
+// 处理语言选择
+const handleLanguageSelect = (key: string) => {
+  // 直接在组件中设置i18n的locale，使用类型断言
+  i18n.global.locale.value = key as 'zh-CN' | 'en-US'
+
+  // 更新store中的当前语言
+  languageStore.currentLanguage = key
+  localStorage.setItem('language', key)
+
+  // 导入并调用更新页面标题函数
+  import('@/router').then(({ updatePageTitle }) => {
+    updatePageTitle()
+  })
+
+  // 强制重新渲染面包屑导航，解决菜单消失问题
+  router.replace(router.currentRoute.value.fullPath)
+
+  // 显示切换成功消息
+  message.success(`${t('navbar.language')}: ${key === 'zh-CN' ? '简体中文' : 'English'}`)
+}
 
 // 添加全屏切换功能
 const toggleFullscreen = () => {
@@ -342,10 +395,10 @@ const toggleFullscreen = () => {
       .requestFullscreen()
       .then(() => {
         isFullscreen.value = true
-        message.success('已进入全屏模式')
+        message.success(t('navbar.fullscreen.enter'))
       })
       .catch((err) => {
-        message.error(`无法进入全屏模式: ${err.message}`)
+        message.error(`${t('navbar.fullscreen.failed')}: ${err.message}`)
       })
   } else {
     // 退出全屏模式
@@ -354,10 +407,10 @@ const toggleFullscreen = () => {
         .exitFullscreen()
         .then(() => {
           isFullscreen.value = false
-          message.success('已退出全屏模式')
+          message.success(t('navbar.fullscreen.exit'))
         })
         .catch((err) => {
-          message.error(`无法退出全屏模式: ${err.message}`)
+          message.error(`${t('navbar.fullscreen.failed')}: ${err.message}`)
         })
     }
   }

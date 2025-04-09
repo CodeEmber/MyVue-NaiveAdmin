@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-container">
     <!-- 实时监控面板 -->
-    <n-card title="实时监控面板" class="mb-16">
+    <n-card :title="t('monitor.realtimePanel')" class="mb-16">
       <n-grid cols="2 s:2 m:4" :x-gap="16" :y-gap="16">
         <n-grid-item v-for="(stat, index) in realtimeStats" :key="index">
           <n-statistic :label="stat.title" :value="stat.value">
@@ -17,10 +17,10 @@
     </n-card>
 
     <!-- 性能监测 -->
-    <n-card title="系统性能监测" class="mt-16">
+    <n-card :title="t('monitor.performancePanel')" class="mt-16">
       <n-grid cols="1 m:2" :x-gap="16" :y-gap="16">
         <n-grid-item>
-          <n-statistic label="CPU使用率">
+          <n-statistic :label="t('monitor.cpuUsage')">
             <n-progress
               type="line"
               :percentage="cpuUsage"
@@ -31,7 +31,7 @@
           </n-statistic>
         </n-grid-item>
         <n-grid-item>
-          <n-statistic label="内存使用率">
+          <n-statistic :label="t('monitor.memoryUsage')">
             <n-progress
               type="line"
               :percentage="memoryUsage"
@@ -47,7 +47,7 @@
     </n-card>
 
     <!-- 最近异常记录 -->
-    <n-card title="最近系统日志" class="mt-16">
+    <n-card :title="t('monitor.systemLogs')" class="mt-16">
       <n-list hoverable>
         <n-list-item v-for="(log, index) in systemLogs" :key="index">
           <n-thing :title="log.title" :description="log.description">
@@ -76,14 +76,15 @@
         </n-list-item>
       </n-list>
       <div class="text-center mt-16">
-        <n-button text>查看全部日志</n-button>
+        <n-button text>{{ t('monitor.viewAllLogs') }}</n-button>
       </div>
     </n-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, markRaw } from 'vue'
+import { ref, markRaw, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import {
   PersonOutline,
   TimeOutline,
@@ -93,6 +94,9 @@ import {
   EyeOutline,
 } from '@vicons/ionicons5'
 
+// 初始化i18n
+const { t } = useI18n()
+
 // 使用markRaw处理图标组件，避免被设为响应式对象
 const personOutlineIcon = markRaw(PersonOutline)
 const pulseOutlineIcon = markRaw(PulseOutline)
@@ -100,26 +104,26 @@ const speedometerOutlineIcon = markRaw(SpeedometerOutline)
 const eyeOutlineIcon = markRaw(EyeOutline)
 
 // 实时监控数据
-const realtimeStats = ref([
+const realtimeStats = computed(() => [
   {
-    title: '当前在线',
+    title: t('monitor.currentOnline'),
     value: '328',
     icon: personOutlineIcon,
     trend: { type: 'success', text: '+12%' },
   },
   {
-    title: '今日访问量',
+    title: t('monitor.todayVisits'),
     value: '3,428',
     icon: eyeOutlineIcon,
     trend: { type: 'success', text: '+5%' },
   },
   {
-    title: '服务器响应时间',
+    title: t('monitor.serverResponse'),
     value: '128ms',
     icon: speedometerOutlineIcon,
   },
   {
-    title: '今日API调用',
+    title: t('monitor.apiCalls'),
     value: '15,632',
     icon: pulseOutlineIcon,
     trend: { type: 'info', text: '+2%' },

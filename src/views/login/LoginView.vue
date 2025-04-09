@@ -2,7 +2,7 @@
   <div class="login-container">
     <div class="login-box">
       <div class="login-header">
-        <h1>后台管理系统</h1>
+        <h1>{{ t('login.title') }}</h1>
       </div>
 
       <n-card class="login-form-card" :bordered="false">
@@ -17,7 +17,7 @@
           <n-form-item path="username">
             <n-input
               v-model:value="formValue.username"
-              placeholder="用户名"
+              :placeholder="t('login.username')"
               :input-props="{ autocomplete: 'username' }"
             >
               <template #prefix>
@@ -29,7 +29,7 @@
             <n-input
               v-model:value="formValue.password"
               type="password"
-              placeholder="密码"
+              :placeholder="t('login.password')"
               :input-props="{ autocomplete: 'current-password' }"
               @keyup.enter="handleLogin"
             >
@@ -40,7 +40,7 @@
           </n-form-item>
 
           <div class="login-options">
-            <n-checkbox v-model:checked="rememberMe">记住我</n-checkbox>
+            <n-checkbox v-model:checked="rememberMe">{{ t('login.rememberMe') }}</n-checkbox>
           </div>
           <div class="login-btn-wrapper">
             <n-button
@@ -50,13 +50,13 @@
               :disabled="loading"
               @click="handleLogin"
             >
-              {{ loading ? '登录中' : '登 录' }}
+              {{ loading ? t('login.loggingIn') : t('login.login') }}
             </n-button>
           </div>
 
           <!-- 提示信息 -->
           <div class="login-tips">
-            <p>演示账号：admin / 123456</p>
+            <p>{{ t('login.demoAccount') }}: admin / 123456</p>
           </div>
         </n-form>
       </n-card>
@@ -65,12 +65,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, markRaw, onMounted } from 'vue'
+import { ref, markRaw, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import type { FormInst, FormRules } from 'naive-ui'
 import { PersonOutline, LockClosedOutline } from '@vicons/ionicons5'
 import { useUserStore } from '../../stores/user'
 import { useMessage } from 'naive-ui'
+import { useI18n } from 'vue-i18n'
+
+// 初始化i18n
+const { t } = useI18n()
 
 // 图标
 const personOutlineIcon = markRaw(PersonOutline)
@@ -87,13 +91,17 @@ const loading = ref(false)
 const message = useMessage()
 
 // 表单校验规则
-const rules: FormRules = {
-  username: [{ required: true, message: '请输入用户名', trigger: ['blur', 'input'] }],
-  password: [
-    { required: true, message: '请输入密码', trigger: ['blur', 'input'] },
-    { min: 6, message: '密码长度不能小于6位', trigger: ['blur', 'input'] },
-  ],
-}
+const rules = computed(
+  (): FormRules => ({
+    username: [
+      { required: true, message: t('login.rules.usernameRequired'), trigger: ['blur', 'input'] },
+    ],
+    password: [
+      { required: true, message: t('login.rules.passwordRequired'), trigger: ['blur', 'input'] },
+      { min: 6, message: t('login.rules.passwordLength'), trigger: ['blur', 'input'] },
+    ],
+  }),
+)
 
 // 路由
 const router = useRouter()
@@ -124,7 +132,7 @@ const handleLogin = () => {
       loading.value = true
       await userStore.login(formValue.value.username, formValue.value.password)
 
-      message.success('登录成功')
+      message.success(t('login.loginSuccess'))
 
       // 保存记住我的状态和用户名
       if (rememberMe.value) {
@@ -143,11 +151,11 @@ const handleLogin = () => {
         router.push('/')
       }
     } catch (error: unknown) {
-      console.error('登录失败:', error)
+      console.error(t('login.loginFailed'), error)
       if (error instanceof Error) {
-        message.error(error.message || '登录失败，请检查用户名和密码')
+        message.error(error.message || t('login.loginErrorMsg'))
       } else {
-        message.error('登录失败，请检查用户名和密码')
+        message.error(t('login.loginErrorMsg'))
       }
     } finally {
       loading.value = false

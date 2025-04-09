@@ -4,19 +4,23 @@
     <a href="https://beian.miit.gov.cn/#/Integrated/index" target="_blank" rel="noopener noreferrer"
       >浙ICP备</a
     >
-    ｜ 🎉 Design by
+    ｜ 🎉 {{ t('footer.designBy') }}
     <a href="#" class="transition line" onclick="window.location.href = window.location.href"
       >wyx</a
     >
+    ｜ {{ t('footer.copyright', { year: currentYear }) }}
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAppStore } from '../../stores/app'
+import { useI18n } from 'vue-i18n'
 
 const appStore = useAppStore()
 const isDarkMode = computed(() => appStore.isDarkMode)
+const { t } = useI18n()
+const currentYear = new Date().getFullYear()
 </script>
 
 <style scoped>

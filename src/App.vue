@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAppStore } from './stores/app'
+import { useI18n } from 'vue-i18n'
 import {
   NConfigProvider,
   NMessageProvider,
@@ -13,12 +14,20 @@ import { computed, onMounted, watch } from 'vue'
 import { initVChartTheme, updateVChartTheme } from './utils/chart/theme'
 
 const appStore = useAppStore()
+const { locale } = useI18n()
 const theme = computed(() => (appStore.isDarkMode ? darkTheme : lightTheme))
 const themeOverrides = computed(() => appStore.themeOverrides)
 
-// 初始化VChart主题
+// 初始化应用
 onMounted(() => {
+  // 初始化VChart主题
   initVChartTheme(appStore.isDarkMode)
+
+  // 初始化语言设置
+  const savedLanguage = localStorage.getItem('language')
+  if (savedLanguage) {
+    locale.value = savedLanguage
+  }
 })
 
 // 监听主题变化，实时更新VChart主题

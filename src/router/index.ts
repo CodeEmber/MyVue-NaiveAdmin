@@ -4,6 +4,8 @@ import LayoutPage from '../layout/LayoutPage.vue'
 import { type AppRouteRecordRaw } from './types'
 import { GridOutline, People, ColorPalette, AlertCircleOutline } from '@vicons/ionicons5'
 import { getUserInfo } from '../api/auth'
+import i18n from '@/i18n'
+import type { RouteLocationNormalized } from 'vue-router'
 
 // 定义路由
 const routes: AppRouteRecordRaw[] = [
@@ -12,7 +14,7 @@ const routes: AppRouteRecordRaw[] = [
     name: 'Login',
     component: () => import('../views/login/LoginView.vue'),
     meta: {
-      title: '登录',
+      title: 'menu.login',
       hidden: true,
     },
   },
@@ -21,7 +23,7 @@ const routes: AppRouteRecordRaw[] = [
     component: LayoutPage,
     name: 'Layout',
     meta: {
-      title: '首页',
+      title: 'menu.home',
       requiresAuth: true,
     },
     children: [
@@ -29,7 +31,7 @@ const routes: AppRouteRecordRaw[] = [
         path: '',
         name: 'Dashboard',
         meta: {
-          title: 'Dashboard',
+          title: 'menu.dashboard',
           icon: GridOutline,
         },
         redirect: '/dashboard/main',
@@ -39,7 +41,7 @@ const routes: AppRouteRecordRaw[] = [
             name: 'MainConsole',
             component: () => import('../views/dashboard/MainConsole.vue'),
             meta: {
-              title: '中控台',
+              title: 'menu.mainConsole',
               requiresAuth: true,
             },
           },
@@ -48,7 +50,7 @@ const routes: AppRouteRecordRaw[] = [
             name: 'MonitorConsole',
             component: () => import('../views/dashboard/MonitorConsole.vue'),
             meta: {
-              title: '监控台',
+              title: 'menu.monitorConsole',
               requiresAuth: true,
             },
           },
@@ -58,7 +60,7 @@ const routes: AppRouteRecordRaw[] = [
         path: '/blogs',
         name: 'Blogs',
         meta: {
-          title: '博客管理',
+          title: 'menu.blogs',
           icon: People,
           requiresAuth: true,
         },
@@ -68,7 +70,7 @@ const routes: AppRouteRecordRaw[] = [
             name: 'BlogsList',
             component: () => import('../views/blogs/BlogsList.vue'),
             meta: {
-              title: '博客列表',
+              title: 'menu.blogsList',
               requiresAuth: true,
             },
           },
@@ -77,7 +79,7 @@ const routes: AppRouteRecordRaw[] = [
             name: 'AddBlog',
             component: () => import('../views/blogs/AddBlog.vue'),
             meta: {
-              title: '添加博客',
+              title: 'menu.addBlog',
               requiresAuth: true,
             },
           },
@@ -91,7 +93,7 @@ const routes: AppRouteRecordRaw[] = [
     name: 'Forbidden',
     component: () => import('../views/error/403.vue'),
     meta: {
-      title: '403 - 无权限访问',
+      title: 'menu.forbidden',
       hidden: true,
     },
   },
@@ -100,7 +102,7 @@ const routes: AppRouteRecordRaw[] = [
     name: 'NotFoundPage',
     component: () => import('../views/error/404.vue'),
     meta: {
-      title: '404 - 页面不存在',
+      title: 'menu.notFoundPage',
       hidden: true,
     },
   },
@@ -109,7 +111,7 @@ const routes: AppRouteRecordRaw[] = [
     name: 'ServerError',
     component: () => import('../views/error/500.vue'),
     meta: {
-      title: '500 - 服务器错误',
+      title: 'menu.serverError',
       hidden: true,
     },
   },
@@ -129,10 +131,37 @@ const router = createRouter({
   routes: routes as unknown as RouteRecordRaw[],
 })
 
+// 更新页面标题的函数 - 改为使用已导入的i18n实例，避免异步问题
+export const updatePageTitle = (route?: RouteLocationNormalized) => {
+  const currentRoute = (route || router.currentRoute.value) as RouteLocationNormalized
+  // 直接使用导入的i18n实例，而不是动态导入
+  const appTitle = i18n.global.t('app.title')
+
+  // 获取当前匹配路由中的所有标题，从父到子
+  const titles: string[] = []
+  if (currentRoute.matched && currentRoute.matched.length) {
+    // 遍历匹配的路由，获取所有标题
+    currentRoute.matched.forEach((record) => {
+      if (record.meta?.title) {
+        const translatedTitle = i18n.global.t(record.meta.title as string)
+        if (translatedTitle && !titles.includes(translatedTitle)) {
+          titles.push(translatedTitle)
+        }
+      }
+    })
+  }
+
+  // 如果有标题，则使用最后一个（最具体的路由标题）
+  const pageTitle = titles.length > 0 ? titles[titles.length - 1] : ''
+
+  // 设置文档标题，格式统一为：[页面标题] - [应用名称]
+  document.title = pageTitle ? `${pageTitle} - ${appTitle}` : appTitle
+}
+
 // 全局前置守卫
 router.beforeEach(async (to, from, next) => {
   // 更新页面标题
-  document.title = to.meta.title ? `${to.meta.title} - 后台管理系统` : '后台管理系统'
+  updatePageTitle(to)
 
   // 检查路由是否需要认证
   if (to.meta.requiresAuth) {

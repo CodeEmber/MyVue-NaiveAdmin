@@ -4,7 +4,7 @@
     <n-card style="margin-bottom: 16px">
       <template #header>
         <div style="display: flex; align-items: center">
-          <span>博客搜索</span>
+          <span>{{ t('blogs.search') }}</span>
         </div>
       </template>
       <template #header-extra>
@@ -15,15 +15,19 @@
                 <SearchOutline />
               </n-icon>
             </template>
-            搜索
+            {{ t('common.search') }}
           </n-button>
-          <n-button @click="clearSearch">重置</n-button>
+          <n-button @click="clearSearch">{{ t('common.reset') }}</n-button>
         </n-space>
       </template>
       <n-space vertical>
         <n-form inline>
-          <n-form-item label="博客标题">
-            <n-input v-model:value="searchValue" placeholder="请输入博客标题关键词" clearable>
+          <n-form-item :label="t('blogs.blogTitle')">
+            <n-input
+              v-model:value="searchValue"
+              :placeholder="t('blogs.titlePlaceholder')"
+              clearable
+            >
               <template #prefix>
                 <n-icon>
                   <SearchOutline />
@@ -31,19 +35,19 @@
               </template>
             </n-input>
           </n-form-item>
-          <n-form-item label="博客分类">
+          <n-form-item :label="t('blogs.blogCategory')">
             <n-select
               v-model:value="searchCategory"
-              placeholder="选择博客分类"
+              :placeholder="t('blogs.selectCategory')"
               clearable
               :options="categoryOptions"
               style="width: 180px"
             />
           </n-form-item>
-          <n-form-item label="博客状态">
+          <n-form-item :label="t('blogs.blogStatus')">
             <n-select
               v-model:value="searchStatus"
-              placeholder="选择博客状态"
+              :placeholder="t('blogs.selectStatus')"
               clearable
               :options="statusOptions"
               style="width: 180px"
@@ -55,14 +59,16 @@
 
     <!-- 博客列表卡片 -->
     <n-card>
-      <template #header><n-space align="stretch">博客列表</n-space></template>
+      <template #header
+        ><n-space align="stretch">{{ t('blogs.list') }}</n-space></template
+      >
       <template #header-extra
         ><n-button type="primary" size="small" @click="addBlog"
           ><template #icon>
             <n-icon>
               <AddCircleOutline />
             </n-icon> </template
-          >添加博客</n-button
+          >{{ t('blogs.add') }}</n-button
         >
       </template>
       <n-data-table
@@ -83,10 +89,10 @@
       @negative-click="cancelCallback"
       @positive-click="submitCallback"
       style="width: 600px"
-      negative-text="取消"
-      positive-text="确认"
+      :negative-text="t('common.cancel')"
+      :positive-text="t('common.confirm')"
       @mask-click="cancelCallback"
-      ><template #header>{{ blogContent.is_edit ? '编辑博客' : '添加博客' }}</template>
+      ><template #header>{{ blogContent.is_edit ? t('blogs.edit') : t('blogs.add') }}</template>
       <div>
         <n-form
           :model="blogContent"
@@ -97,21 +103,25 @@
             margin: '40px 0px 10px 0px',
           }"
         >
-          <n-form-item label="博客标题">
-            <n-input placeholder="请输入博客标题" v-model:value="blogContent.title" clearable />
+          <n-form-item :label="t('blogs.blogTitle')">
+            <n-input
+              :placeholder="t('blogs.enterTitle')"
+              v-model:value="blogContent.title"
+              clearable
+            />
           </n-form-item>
-          <n-form-item label="博客内容摘要">
+          <n-form-item :label="t('blogs.blogSummary')">
             <n-input
               type="textarea"
-              placeholder="请输入博客内容摘要"
+              :placeholder="t('blogs.enterSummary')"
               v-model:value="blogContent.summary"
               clearable
             />
           </n-form-item>
-          <n-form-item label="博客状态">
-            <n-select v-model:value="blogContent.status" :options="statusOptions" />
+          <n-form-item :label="t('blogs.blogStatus')">
+            <n-select v-model:value="blogContent.status" :options="statusOptionsComputed" />
           </n-form-item>
-          <n-form-item label="博客分类">
+          <n-form-item :label="t('blogs.blogCategory')">
             <n-select v-model:value="blogContent.category" :options="categoryOptions" />
           </n-form-item>
         </n-form></div
@@ -121,9 +131,13 @@
 
 <script lang="ts" setup>
 import { h, reactive, ref, onMounted, computed } from 'vue'
-import { BookOutline, AddCircleOutline, SearchOutline } from '@vicons/ionicons5'
+import { AddCircleOutline, SearchOutline } from '@vicons/ionicons5'
 import { NTag, NButton, useMessage, NPopconfirm } from 'naive-ui'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+
+// 初始化i18n
+const { t } = useI18n()
 
 // 添加路由
 const router = useRouter()
@@ -216,6 +230,22 @@ const searchCategory = ref(null)
 const searchStatus = ref(null)
 
 // 博客状态
+const statusOptionsComputed = computed(() => [
+  {
+    label: t('blogs.status.published'),
+    value: 'published',
+  },
+  {
+    label: t('blogs.status.draft'),
+    value: 'draft',
+  },
+  {
+    label: t('blogs.status.review'),
+    value: 'review',
+  },
+])
+
+// 保留静态版本用于表格筛选
 const statusOptions = [
   {
     label: '已发布',
@@ -269,17 +299,17 @@ const columns = ({
     },
   },
   {
-    title: '标题',
+    title: t('blogs.blogTitle'),
     key: 'title',
     align: 'center',
   },
   {
-    title: '作者',
+    title: t('blogs.blogAuthor'),
     key: 'author',
     align: 'center',
   },
   {
-    title: '分类',
+    title: t('blogs.blogCategory'),
     key: 'category',
     align: 'center',
     filterOptions: categoryOptions.map((option) => ({
@@ -291,7 +321,7 @@ const columns = ({
     },
   },
   {
-    title: '状态',
+    title: t('blogs.blogStatus'),
     key: 'status',
     align: 'center',
     render(row: { status: string }) {
@@ -302,7 +332,7 @@ const columns = ({
             size: 'small',
             type: 'success',
           },
-          { default: () => '已发布' },
+          { default: () => t('blogs.status.published') },
         )
       } else if (row.status === 'draft') {
         return h(
@@ -311,7 +341,7 @@ const columns = ({
             size: 'small',
             type: 'warning',
           },
-          { default: () => '草稿' },
+          { default: () => t('blogs.status.draft') },
         )
       } else if (row.status === 'review') {
         return h(
@@ -320,21 +350,21 @@ const columns = ({
             size: 'small',
             type: 'info',
           },
-          { default: () => '审核中' },
+          { default: () => t('blogs.status.review') },
         )
       }
     },
     filterOptions: [
       {
-        label: '已发布',
+        label: t('blogs.status.published'),
         value: 'published',
       },
       {
-        label: '草稿',
+        label: t('blogs.status.draft'),
         value: 'draft',
       },
       {
-        label: '审核中',
+        label: t('blogs.status.review'),
         value: 'review',
       },
     ],
@@ -343,7 +373,7 @@ const columns = ({
     },
   },
   {
-    title: '阅读量',
+    title: t('blogs.views'),
     key: 'views',
     align: 'center',
     sortOrder: false,
@@ -352,7 +382,7 @@ const columns = ({
     },
   },
   {
-    title: '评论数',
+    title: t('blogs.comments'),
     key: 'comments',
     align: 'center',
     sortOrder: false,
@@ -361,12 +391,12 @@ const columns = ({
     },
   },
   {
-    title: '发布日期',
+    title: t('blogs.publishDate'),
     key: 'publishDate',
     align: 'center',
   },
   {
-    title: '操作',
+    title: t('blogs.operations'),
     key: 'operation',
     align: 'center',
     width: 200,
@@ -381,7 +411,7 @@ const columns = ({
             },
             onClick: () => edit(row),
           },
-          { default: () => '编辑' },
+          { default: () => t('common.edit') },
         ),
         h(
           NPopconfirm,
@@ -397,10 +427,10 @@ const columns = ({
                 {
                   size: 'small',
                 },
-                { default: () => '删除' },
+                { default: () => t('common.delete') },
               )
             },
-            default: () => '确定要删除这篇博客吗？',
+            default: () => t('blogs.confirmDelete'),
           },
         ),
       ]
@@ -408,7 +438,8 @@ const columns = ({
   },
 ]
 
-const columnsRef = ref(
+// 将columnsRef改为计算属性，以便在语言变化时自动更新
+const columnsRef = computed(() =>
   columns({
     edit,
   }),
@@ -510,7 +541,7 @@ function cancelCallback() {
 
 function submitCallback() {
   if (!blogContent.value.title || !blogContent.value.summary) {
-    message.error('内容未填写完整')
+    message.error(t('blogs.error.incompleteContent'))
     return false
   } else {
     if (blogContent.value.is_edit) {
@@ -520,10 +551,10 @@ function submitCallback() {
         blogsData.value[index].title = blogContent.value.title
         blogsData.value[index].category = blogContent.value.category
         blogsData.value[index].status = blogContent.value.status
-        message.success('更新博客成功')
+        message.success(t('blogs.success.update'))
         showModal.value = false
       } else {
-        message.error('更新博客失败')
+        message.error(t('blogs.error.updateFailed'))
       }
     } else {
       // 模拟添加博客
@@ -531,7 +562,7 @@ function submitCallback() {
       blogsData.value.push({
         id: newId,
         title: blogContent.value.title,
-        author: '当前用户', // 假设是当前登录用户
+        author: t('blogs.currentUser'), // 假设是当前登录用户
         category: blogContent.value.category,
         status: blogContent.value.status,
         views: 0,
@@ -539,7 +570,7 @@ function submitCallback() {
         publishDate:
           blogContent.value.status === 'published' ? new Date().toISOString().slice(0, 10) : '-',
       })
-      message.success('添加博客成功')
+      message.success(t('blogs.success.add'))
       showModal.value = false
     }
   }
@@ -556,9 +587,9 @@ function deleteBlog(row: { status?: string; id?: unknown }) {
     if (filteredIndex !== -1) {
       filteredData.value.splice(filteredIndex, 1)
     }
-    message.success('删除成功')
+    message.success(t('blogs.success.delete'))
   } else {
-    message.error('删除失败')
+    message.error(t('blogs.error.deleteFailed'))
   }
 }
 

@@ -2,18 +2,22 @@
   <div class="error-page">
     <div class="error-content">
       <n-card class="error-card" size="huge" :bordered="false">
-        <n-result status="403" title="403 访问被禁止" description="抱歉，您没有权限访问此页面">
+        <n-result
+          status="403"
+          :title="t('error.403.title')"
+          :description="t('error.403.description')"
+        >
           <template #footer>
             <div class="error-actions">
-              <n-button @click="goHome" type="primary">返回首页</n-button>
-              <n-button @click="goBack">返回上一页</n-button>
+              <n-button @click="goHome" type="primary">{{ t('error.actions.backHome') }}</n-button>
+              <n-button @click="goBack">{{ t('error.actions.backPrev') }}</n-button>
             </div>
           </template>
         </n-result>
       </n-card>
 
       <div class="error-footer">
-        <p>© {{ currentYear }} 后台管理系统</p>
+        <p>© {{ currentYear }} {{ t('app.title') }}</p>
       </div>
     </div>
   </div>
@@ -29,6 +33,10 @@ export default {
 import { useRouter } from 'vue-router'
 import { NResult, NButton, NCard } from 'naive-ui'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+// 初始化i18n
+const { t } = useI18n()
 
 const router = useRouter()
 const currentYear = ref(new Date().getFullYear())

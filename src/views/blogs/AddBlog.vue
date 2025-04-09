@@ -4,7 +4,7 @@
       <template #header>
         <n-space align="stretch">
           <n-icon size="22" style="margin-top: 2px"><CreateOutline /></n-icon>
-          添加博客
+          {{ t('blogs.add') }}
         </n-space>
       </template>
       <template #header-extra>
@@ -14,7 +14,7 @@
               <ArrowBackOutline />
             </n-icon>
           </template>
-          返回列表
+          {{ t('blogs.backToList') }}
         </n-button>
       </template>
       <n-form
@@ -29,20 +29,20 @@
           margin: '20px auto',
         }"
       >
-        <n-form-item label="博客分类" path="blogCategory">
+        <n-form-item :label="t('blogs.blogCategory')" path="blogCategory">
           <n-select
-            placeholder="请选择博客分类"
+            :placeholder="t('blogs.selectCategory')"
             :options="categoryOptions"
             v-model:value="model.blogCategory"
             clearable
           />
         </n-form-item>
-        <n-form-item label="博客标题" path="blogTitle">
-          <n-input placeholder="请输入博客标题" v-model:value="model.blogTitle" clearable />
+        <n-form-item :label="t('blogs.blogTitle')" path="blogTitle">
+          <n-input :placeholder="t('blogs.enterTitle')" v-model:value="model.blogTitle" clearable />
         </n-form-item>
-        <n-form-item label="博客摘要" path="blogSummary">
+        <n-form-item :label="t('blogs.blogSummary')" path="blogSummary">
           <n-input
-            placeholder="请输入博客摘要"
+            :placeholder="t('blogs.enterSummary')"
             v-model:value="model.blogSummary"
             type="textarea"
             :autosize="{
@@ -51,13 +51,21 @@
             }"
           />
         </n-form-item>
-        <n-form-item label="博客作者" path="blogAuthor">
-          <n-input placeholder="请输入博客作者" v-model:value="model.blogAuthor" clearable />
+        <n-form-item :label="t('blogs.blogAuthor')" path="blogAuthor">
+          <n-input
+            :placeholder="t('blogs.enterAuthor')"
+            v-model:value="model.blogAuthor"
+            clearable
+          />
         </n-form-item>
-        <n-form-item label="封面图片" path="blogCover">
-          <n-input placeholder="请输入封面图片链接" v-model:value="model.blogCover" clearable />
+        <n-form-item :label="t('blogs.blogCover')" path="blogCover">
+          <n-input
+            :placeholder="t('blogs.enterCoverUrl')"
+            v-model:value="model.blogCover"
+            clearable
+          />
         </n-form-item>
-        <n-form-item label="发布时间" path="publishDate">
+        <n-form-item :label="t('blogs.publishDate')" path="publishDate">
           <!-- 不允许选未来的时间 -->
           <n-date-picker
             v-model:formatted-value="model.publishDate"
@@ -67,18 +75,18 @@
             :is-date-disabled="dateDisabled"
           />
         </n-form-item>
-        <n-form-item label="博客状态" path="blogStatus">
+        <n-form-item :label="t('blogs.blogStatus')" path="blogStatus">
           <n-radio-group v-model:value="model.blogStatus">
             <n-space>
-              <n-radio value="published"> 已发布 </n-radio>
-              <n-radio value="draft"> 草稿 </n-radio>
-              <n-radio value="review"> 审核中 </n-radio>
+              <n-radio value="published"> {{ t('blogs.status.published') }} </n-radio>
+              <n-radio value="draft"> {{ t('blogs.status.draft') }} </n-radio>
+              <n-radio value="review"> {{ t('blogs.status.review') }} </n-radio>
             </n-space>
           </n-radio-group>
         </n-form-item>
-        <n-form-item label="博客内容" path="blogContent">
+        <n-form-item :label="t('blogs.blogContent')" path="blogContent">
           <n-input
-            placeholder="请输入博客内容"
+            :placeholder="t('blogs.enterContent')"
             v-model:value="model.blogContent"
             type="textarea"
             :autosize="{
@@ -88,10 +96,10 @@
           />
         </n-form-item>
         <div style="display: flex; justify-content: flex-end">
-          <n-button @click="resetButtonClick" type="primary" ghost style="margin-right: 12px"
-            >重置</n-button
-          >
-          <n-button @click="addButtonClick" type="primary">添加</n-button>
+          <n-button @click="resetButtonClick" type="primary" ghost style="margin-right: 12px">{{
+            t('common.reset')
+          }}</n-button>
+          <n-button @click="addButtonClick" type="primary">{{ t('common.add') }}</n-button>
         </div>
       </n-form>
     </n-card>
@@ -99,10 +107,14 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { useMessage } from 'naive-ui'
 import { useRouter } from 'vue-router'
 import { CreateOutline, ArrowBackOutline } from '@vicons/ionicons5'
+import { useI18n } from 'vue-i18n'
+
+// 初始化i18n
+const { t } = useI18n()
 
 function dateDisabled(ts: number) {
   return ts > Date.now()
@@ -138,26 +150,26 @@ const categoryOptions = [
   },
 ]
 
-const rules = {
+const rules = computed(() => ({
   blogCategory: {
     required: true,
     trigger: ['blur', 'change'],
-    message: '请选择博客分类',
+    message: t('blogs.rules.categoryRequired'),
   },
   blogTitle: {
     required: true,
     trigger: ['blur', 'input'],
-    message: '请输入博客标题',
+    message: t('blogs.rules.titleRequired'),
   },
   blogSummary: {
     required: true,
     trigger: ['blur', 'input'],
-    message: '请输入博客摘要',
+    message: t('blogs.rules.summaryRequired'),
   },
   blogAuthor: {
     required: true,
     trigger: ['blur', 'input'],
-    message: '请输入博客作者',
+    message: t('blogs.rules.authorRequired'),
   },
   blogCover: {
     trigger: ['blur', 'input'],
@@ -165,19 +177,19 @@ const rules = {
   publishDate: {
     required: true,
     trigger: ['blur', 'change'],
-    message: '请选择发布时间',
+    message: t('blogs.rules.dateRequired'),
   },
   blogStatus: {
     required: true,
     trigger: ['blur', 'change'],
-    message: '请选择博客状态',
+    message: t('blogs.rules.statusRequired'),
   },
   blogContent: {
     required: true,
     trigger: ['blur', 'input'],
-    message: '请输入博客内容',
+    message: t('blogs.rules.contentRequired'),
   },
-}
+}))
 
 const model = ref({
   blogCategory: null, // 博客分类
@@ -208,12 +220,12 @@ function addButtonClick(e: { preventDefault: () => void }) {
   formRef.value?.validate((errors) => {
     if (!errors) {
       // 模拟添加博客
-      message.success('博客添加成功')
+      message.success(t('blogs.addSuccess'))
       setTimeout(() => {
         goBack()
       }, 1500)
     } else {
-      message.error('表单填写有误，请检查')
+      message.error(t('blogs.formError'))
     }
   })
 }

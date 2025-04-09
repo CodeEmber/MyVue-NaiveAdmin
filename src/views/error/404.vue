@@ -4,20 +4,20 @@
       <n-card class="error-card" size="huge" :bordered="false">
         <n-result
           status="404"
-          title="404 页面不存在"
-          description="抱歉，您访问的页面不存在或已被移除"
+          :title="t('error.404.title')"
+          :description="t('error.404.description')"
         >
           <template #footer>
             <div class="error-actions">
-              <n-button @click="goHome" type="primary">返回首页</n-button>
-              <n-button @click="goBack">返回上一页</n-button>
+              <n-button @click="goHome" type="primary">{{ t('error.actions.backHome') }}</n-button>
+              <n-button @click="goBack">{{ t('error.actions.backPrev') }}</n-button>
             </div>
           </template>
         </n-result>
       </n-card>
 
       <div class="error-footer">
-        <p>© {{ currentYear }} 后台管理系统</p>
+        <p>© {{ currentYear }} {{ t('app.title') }}</p>
       </div>
     </div>
   </div>
@@ -33,6 +33,10 @@ export default {
 import { useRouter } from 'vue-router'
 import { NResult, NButton, NCard } from 'naive-ui'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+// 初始化i18n
+const { t } = useI18n()
 
 const router = useRouter()
 const currentYear = ref(new Date().getFullYear())
