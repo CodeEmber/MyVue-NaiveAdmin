@@ -4,13 +4,13 @@
       <n-card class="error-card" size="huge" :bordered="false">
         <n-result
           status="404"
-          :title="t('error.404.title')"
-          :description="t('error.404.description')"
+          :title="t('errors.notFound')"
+          :description="t('errors.notFoundDesc')"
         >
           <template #footer>
             <div class="error-actions">
-              <n-button @click="goHome" type="primary">{{ t('error.actions.backHome') }}</n-button>
-              <n-button @click="goBack">{{ t('error.actions.backPrev') }}</n-button>
+              <n-button @click="goHome" type="primary">{{ t('errors.backHome') }}</n-button>
+              <n-button @click="goBack">{{ t('errors.backPrev') }}</n-button>
             </div>
           </template>
         </n-result>

@@ -3,6 +3,14 @@ export default {
     title: 'Admin System',
     description: 'A backend management system template based on Vue 3 and Vite',
   },
+  form: {
+    account: {
+      required: 'Please enter your account',
+    },
+    password: {
+      required: 'Please enter your password',
+    },
+  },
   common: {
     confirm: 'Confirm',
     cancel: 'Cancel',

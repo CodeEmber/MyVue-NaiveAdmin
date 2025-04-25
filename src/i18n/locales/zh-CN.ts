@@ -3,6 +3,14 @@ export default {
     title: '后台管理系统',
     description: '一个基于 Vue 3 和 Vite 的后台管理系统模板',
   },
+  form: {
+    account: {
+      required: '请输入账号',
+    },
+    password: {
+      required: '请输入密码',
+    },
+  },
   common: {
     confirm: '确认',
     cancel: '取消',
