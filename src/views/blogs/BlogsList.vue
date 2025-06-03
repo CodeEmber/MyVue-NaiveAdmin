@@ -89,7 +89,7 @@
       @negative-click="cancelCallback"
       @positive-click="submitCallback"
       style="width: 600px"
-      :negative-text="t('common.cancel')"
+      :negative-text="t('common.cancel.text')"
       :positive-text="t('common.confirm')"
       @mask-click="cancelCallback"
       ><template #header>{{ blogContent.is_edit ? t('blogs.edit') : t('blogs.add') }}</template>
@@ -248,39 +248,39 @@ const statusOptionsComputed = computed(() => [
 // 保留静态版本用于表格筛选
 const statusOptions = [
   {
-    label: '已发布',
+    label: t('blogs.status.published'),
     value: 'published',
   },
   {
-    label: '草稿',
+    label: t('blogs.status.draft'),
     value: 'draft',
   },
   {
-    label: '审核中',
+    label: t('blogs.status.review'),
     value: 'review',
   },
 ]
 
 const categoryOptions = [
   {
-    label: '入门指导',
-    value: '入门指导',
+    label: t('blogs.categories.beginner'),
+    value: 'beginner',
   },
   {
-    label: '专业训练',
-    value: '专业训练',
+    label: t('blogs.categories.professional'),
+    value: 'professional',
   },
   {
-    label: '饮食营养',
-    value: '饮食营养',
+    label: t('blogs.categories.nutrition'),
+    value: 'nutrition',
   },
   {
-    label: '有氧训练',
-    value: '有氧训练',
+    label: t('blogs.categories.aerobic'),
+    value: 'aerobic',
   },
   {
-    label: '器材使用',
-    value: '器材使用',
+    label: t('blogs.categories.equipment'),
+    value: 'equipment',
   },
 ]
 
@@ -293,10 +293,8 @@ const columns = ({
     title: 'ID',
     key: 'id',
     align: 'center',
+    sorter: 'default',
     sortOrder: false,
-    sorter(rowA: { id: number }, rowB: { id: number }) {
-      return rowA.id - rowB.id
-    },
   },
   {
     title: t('blogs.blogTitle'),
@@ -312,6 +310,7 @@ const columns = ({
     title: t('blogs.blogCategory'),
     key: 'category',
     align: 'center',
+    // 筛选配置，使用国际化标签
     filterOptions: categoryOptions.map((option) => ({
       label: option.label,
       value: option.value,
@@ -368,6 +367,7 @@ const columns = ({
         value: 'review',
       },
     ],
+
     filter(value: string, row: { status: string }) {
       return row.status === value
     },
@@ -376,19 +376,15 @@ const columns = ({
     title: t('blogs.views'),
     key: 'views',
     align: 'center',
+    sorter: 'default',
     sortOrder: false,
-    sorter(rowA: { views: number }, rowB: { views: number }) {
-      return rowA.views - rowB.views
-    },
   },
   {
     title: t('blogs.comments'),
     key: 'comments',
     align: 'center',
+    sorter: 'default',
     sortOrder: false,
-    sorter(rowA: { comments: number }, rowB: { comments: number }) {
-      return rowA.comments - rowB.comments
-    },
   },
   {
     title: t('blogs.publishDate'),
@@ -419,6 +415,8 @@ const columns = ({
             onPositiveClick: () => {
               deleteBlog(row)
             },
+            positiveText: t('common.confirm'),
+            negativeText: t('common.cancel.text'),
           },
           {
             trigger: () => {
@@ -473,7 +471,7 @@ const blogContent = ref<{
   title: null,
   summary: null,
   status: 'published',
-  category: '入门指导',
+  category: 'beginner', // 使用语言无关的值
   id: null,
 })
 
@@ -511,22 +509,16 @@ function edit(row: { title: string | null; status: string; category: string; id:
     blogContent.value.title = null
     blogContent.value.summary = null
     blogContent.value.status = 'published'
-    blogContent.value.category = '入门指导'
+    blogContent.value.category = 'beginner' // 使用语言无关的值
     blogContent.value.is_edit = false
     blogContent.value.id = null
   }
 }
 
-function handleSorterChange(sorter: { columnKey: string; order: boolean }) {
-  columnsRef.value.forEach((column) => {
-    if (column.sortOrder === undefined) return
-    if (!sorter) {
-      column.sortOrder = false
-      return
-    }
-    if (column.key === sorter.columnKey) column.sortOrder = sorter.order
-    else column.sortOrder = false
-  })
+// 由于 Naive UI 的表格组件会自动处理排序，所以这里不再需要额外的排序处理逻辑
+function handleSorterChange() {
+  // 仅用于触发数据重新渲染
+  console.log('排序已更改')
 }
 
 function cancelCallback() {
@@ -534,7 +526,7 @@ function cancelCallback() {
   blogContent.value.title = null
   blogContent.value.summary = null
   blogContent.value.status = 'published'
-  blogContent.value.category = '入门指导'
+  blogContent.value.category = 'beginner' // 使用语言无关的值
   blogContent.value.is_edit = false
   blogContent.value.id = null
 }

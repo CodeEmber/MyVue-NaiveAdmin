@@ -34,12 +34,18 @@ import { useRouter } from 'vue-router'
 import { NResult, NButton, NCard } from 'naive-ui'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useAppStore } from '@/stores/app'
+import { storeToRefs } from 'pinia'
 
 // 初始化i18n
 const { t } = useI18n()
 
 const router = useRouter()
 const currentYear = ref(new Date().getFullYear())
+
+// 获取主题状态
+const appStore = useAppStore()
+const { isDarkMode } = storeToRefs(appStore)
 
 const goHome = () => {
   router.push('/')
@@ -56,7 +62,7 @@ const goBack = () => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: #f8f9fa;
+  background-color: v-bind('isDarkMode ? "#18181c" : "#f8f9fa"');
   position: absolute;
   top: 0;
   left: 0;
@@ -76,9 +82,11 @@ const goBack = () => {
 .error-card {
   max-width: 600px;
   width: 100%;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: v-bind(
+    'isDarkMode ? "0 4px 16px rgba(0, 0, 0, 0.4)" : "0 4px 16px rgba(0, 0, 0, 0.08)"'
+  );
   border-radius: 8px;
-  background-color: #fff;
+  background-color: v-bind('isDarkMode ? "#242424" : "#fff"');
 }
 
 .error-actions {
@@ -90,7 +98,7 @@ const goBack = () => {
 .error-footer {
   margin-top: 40px;
   text-align: center;
-  color: #999;
+  color: v-bind('isDarkMode ? "#999" : "#666"');
   font-size: 14px;
 }
 </style>

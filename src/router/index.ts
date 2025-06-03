@@ -87,7 +87,7 @@ const routes: AppRouteRecordRaw[] = [
       },
     ],
   },
-  // 错误页面路由 - 从Layout移出，作为独立页面
+  // 错误页面路由
   {
     path: '/error/403',
     name: 'Forbidden',
@@ -115,7 +115,7 @@ const routes: AppRouteRecordRaw[] = [
       hidden: true,
     },
   },
-  // 404路由 - 需要放在最后
+  // 404路由
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',

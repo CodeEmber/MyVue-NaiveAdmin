@@ -106,7 +106,7 @@
     </n-drawer>
 
     <n-modal v-model:show="profile" closable>
-      <n-card style="width: 600px" title="个人资料" :bordered="false" size="huge">
+      <n-card style="width: 600px" :title="t('navbar.profile')" :bordered="false" size="huge">
         <h6>123</h6>
       </n-card>
     </n-modal>
@@ -114,26 +114,26 @@
       v-model:show="editProfile"
       closable
       preset="dialog"
-      positive-text="确认"
-      negative-text="取消"
+      :positive-text="t('common.confirm')"
+      :negative-text="t('common.cancel.text')"
       @positive-click="submitCallback"
       @negative-click="cancelCallback"
     >
       <template #header>
-        <div>编辑资料</div>
+        <div>{{ t('navbar.editProfile') }}</div>
       </template>
       <div>
         <n-form :model="model" ref="formRef" :rules="rules" size="large" label-placement="left">
-          <n-form-item path="account" label-style="{background:red}" label="年龄">
+          <n-form-item path="account" label-style="{background:red}" :label="t('profile.age')">
             <n-input
               v-model:value="model.account"
               clearable
               @keydown.enter.prevent
-              placeholder="请输入用户名"
+              :placeholder="t('profile.enterUsername')"
             />
           </n-form-item>
-          <n-form-item path="password" label="密码">
-            <n-input v-model:value="model.password" type="password" placeholder="请输入密码" />
+          <n-form-item path="password" :label="t('login.password')">
+            <n-input v-model:value="model.password" type="password" :placeholder="t('profile.enterPassword')" />
           </n-form-item>
         </n-form>
       </div>
@@ -384,7 +384,7 @@ const handleLanguageSelect = (key: string) => {
   router.replace(router.currentRoute.value.fullPath)
 
   // 显示切换成功消息
-  message.success(`${t('navbar.language')}: ${key === 'zh-CN' ? '简体中文' : 'English'}`)
+  message.success(`${t('navbar.language')}: ${key === 'zh-CN' ? t('language.zhCN') : t('language.enUS')}`)
 }
 
 // 添加全屏切换功能

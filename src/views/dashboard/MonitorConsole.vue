@@ -139,24 +139,24 @@ const usedMemory = ref('4.8 GB')
 // 系统日志数据
 const systemLogs = ref([
   {
-    title: '登录失败',
-    description: '用户多次登录失败，IP已被临时封禁',
+    title: t('monitor.logs.loginFailed'),
+    description: t('monitor.logs.loginFailedDesc'),
     level: 'warning',
     time: '2025-03-30 10:42:15',
     user: 'unknown',
     ip: '192.168.1.101',
   },
   {
-    title: '数据库连接异常',
-    description: '数据库连接池出现超时问题，已自动恢复',
+    title: t('monitor.logs.dbError'),
+    description: t('monitor.logs.dbErrorDesc'),
     level: 'error',
     time: '2025-03-30 09:15:30',
     user: 'system',
     ip: '127.0.0.1',
   },
   {
-    title: '系统备份完成',
-    description: '每日系统数据备份已完成',
+    title: t('monitor.logs.backupComplete'),
+    description: t('monitor.logs.backupCompleteDesc'),
     level: 'info',
     time: '2025-03-30 03:00:00',
     user: 'system',
